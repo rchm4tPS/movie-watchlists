@@ -1,0 +1,14 @@
+{
+  "name": "Scrim-s03tqlm",
+  "description": "https://scrimba.com/frontend-path-c0j/~0nv",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "Scrim-s03tqlm": "file:",
+    "vite": "latest"
+  }
+}
