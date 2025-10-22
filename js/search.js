@@ -13,7 +13,7 @@ export function renderSearchComponent() {
 export async function getFilmData(title) {
     const cleanedTitle = title.replace(/\s+/,"+")
 
-    const baseURL = "http://www.omdbapi.com/"
+    const baseURL = "https://www.omdbapi.com/"
     const fullUrl = `${baseURL}?apikey=${import.meta.env.VITE_OMDB_API_KEY}&t=${cleanedTitle}&plot=full`
 
     const response = await fetch(fullUrl)
