@@ -13,6 +13,12 @@ crashed:
 - the card of that movie will be just 100% height OF THE IMAGE container.
 - Happened on the screen with media queries (breakpoint < 768px)
 
+22 Oct 2025 --> BUG-002: Same, exact movie query is displayed twice in index.html. But the localStorage update will take effect to both retrieved movie immediately.
+- Severity: minor, just conditional logic to check whether there has been displayed movie or not from query.
+
+22 Oct 2025 --> BUG-003: Performance issue: nav element rendered nearly 2s or more due to the existance of background-image in CSS for that element to be rendered to the page each time there is a re-rendering operation.
+- Severity: minor, maybe implement lazy loading or pre-loaded so whenever user changed page, the same navbar bg-img need not to be redownload in each re-render.
+
 Evidence:
 ![The screenshot of the bug encountered, coded as BUG-001.](/public/images/BUG-001.png)
 

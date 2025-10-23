@@ -8,6 +8,19 @@ let movieDatas = [];
 let movieLocalStorage = JSON.parse(localStorage.getItem("watchlist")) || [];
 let watchlistListenerAttached = false;
 
+// This function will be called by the onerror attribute in the img tag
+function handleImgError(imgElement) {
+    const placeholderHTML = `
+        <div class="movie-img-placeholder">
+            <i class="fa-solid fa-film"></i>
+            <p>Poster Not Found</p>
+        </div>`;
+    // Replace the entire content of the parent container (.movie-img-container)
+    imgElement.parentElement.innerHTML = placeholderHTML;
+}
+// Make it available on the window object so the inline handler can find it.
+window.handleImgError = handleImgError;
+
 function addSearchEventListener() {
     const searchBtn = document.querySelector('button[type="submit"]');
 
@@ -20,11 +33,16 @@ function addSearchEventListener() {
                 try {
                     const searchResultData = await getFilmData(movieTitleInput);
 
-                    if (!searchResultData.Error) movieDatas.unshift(searchResultData);
+                    // --- START OF FIX for BUG-002 ---
+                    if (!searchResultData.Error) {
+                        // Wipe the previous search results for a clean UI
+                        movieDatas = []
+                        movieDatas.unshift(searchResultData);
+                    }
+                    // --- END OF FIX for BUG-002 ---
                     else throw new Error(searchResultData.Error);
 
                     renderListView("index");
-                    addToWatchlistEventListener();
                 } catch (error) {
                     console.error("Failed to fetch or render movie data:", error);
                 }
@@ -83,7 +101,17 @@ function isMovieInWatchlist(imdbID) {
 function addMovieToWatchlist(movieData) {
     const list = getWatchlistFromStorage();
     if (!list.some((m) => m.imdbID === movieData.imdbID)) {
-        list.unshift(Object.assign({}, movieData));
+        // create a leaner version of data to be stored in localStorage
+        const essentialMovieData = {
+            imdbID: movieData.imdbID,
+            Title: movieData.Title,
+            Poster: movieData.Poster,
+            imdbRating: movieData.imdbRating,
+            Runtime: movieData.Runtime,
+            Genre: movieData.Genre,
+            Plot: movieData.Plot
+        }
+        list.unshift(essentialMovieData);
         setWatchlistToStorage(list);
     }
 }
@@ -111,16 +139,31 @@ function renderListView(pageName) {
 
     if (source.length > 0) {
         movieContainer.innerHTML = source
-            .map((movie) => {
+            .map((movie, index) => {
                 const inWatchlist = isMovieInWatchlist(movie.imdbID);
                 const btnClass = inWatchlist ? "added-to-watchlist" : "";
                 const iconClass = inWatchlist ? "fa-circle-minus" : "fa-circle-plus";
                 const btnText = inWatchlist ? "Remove from Watchlist" : "Add to Watchlist";
 
+                // --- START OF FIX for BUG-001 ---
+                const posterHTML = movie.Poster !== "N/A"
+                    ? `<img 
+                            class="movie-img" 
+                            src="${movie.Poster}" 
+                            alt="Poster of movie title '${movie.Title}'" 
+                            loading="${index < 2 ? 'eager' : 'lazy'}"
+                            onerror="handleImgError(this)"
+                       >`
+                    : `<div class="movie-img-placeholder">
+                        <i class="fa-solid fa-film"></i>
+                        <p>No Poster Available</p>
+                    </div>`;
+                // --- END OF FIX for BUG-001 ---
+
                 return `
                     <div class="movie-card" data-movie-id="${movie.imdbID}">
                             <div class="movie-img-container">
-                                    <img class="movie-img" src="${movie.Poster}" alt="Poster of movie title '${movie.Title}'">
+                                ${posterHTML}
                             </div>
                             <div class="movie-information">
                                 <div class="data-row">

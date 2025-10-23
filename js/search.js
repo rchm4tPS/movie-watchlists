@@ -11,10 +11,11 @@ export function renderSearchComponent() {
 }
 
 export async function getFilmData(title) {
-    const cleanedTitle = title.replace(/\s+/,"+")
+    // need to use https protocol instead of http when deployed!
+    // The new URL points to OUR serverless function, not OMDb
+    // const baseURL = "https://www.omdbapi.com/"
 
-    const baseURL = "https://www.omdbapi.com/"
-    const fullUrl = `${baseURL}?apikey=${import.meta.env.VITE_OMDB_API_KEY}&t=${cleanedTitle}&plot=full`
+    const fullUrl = `/api/getFilm?title=${title}`;
 
     const response = await fetch(fullUrl)
     const dataRetrieved = await response.json()

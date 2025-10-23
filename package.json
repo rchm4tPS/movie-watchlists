@@ -5,10 +5,15 @@
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "netlify dev",
+    "serve:prod": "npm run build && npx netlify dev --dir=dist"
   },
   "dependencies": {
     "Scrim-s03tqlm": "file:",
     "vite": "latest"
+  },
+  "devDependencies": {
+    "netlify-cli": "^23.9.3"
   }
 }

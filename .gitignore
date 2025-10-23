@@ -2,3 +2,5 @@ node_modules
 dist
 requirements.md
 .env*
+# Local Netlify folder
+.netlify
